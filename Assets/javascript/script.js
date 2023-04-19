@@ -3,19 +3,20 @@
 // in the html.
 var today = dayjs();
 var saveButtonEl = $('.btn')
-var toDoEl = $('')
+var toDoEl = $('.description')
 
 $(function () {
 
-  // var today = dayjs();
   $('#currentDay').text(today.format('dddd, MMM DD'))
-  var hour = dayjs().hour();
-  if (hour)
-  // var saveButtonEl = $('.btn')
-  // var toDoEl = $('.description')
+
   saveButtonEl.on('click', function() {
-    console.log(toDoEl);
+    console.log('hello');
   });
+
+  toDoEl.on('click', function() {
+    console.log('to do');
+  })
+
   // TODO: Add a listener for click events on the save button. This code should
   // use the id in the containing time-block as a key to save the user input in
   // local storage. HINT: What does `this` reference in the click listener
