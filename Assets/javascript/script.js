@@ -1,28 +1,80 @@
 // Wrap all code that interacts with the DOM in a call to jQuery to ensure that
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
-var today = dayjs();
-var saveButtonEl = $('.btn')
-var toDoEl = $('.description')
 
 $(function () {
 
+  var today = dayjs();
+  var saveButtonEl = $('.btn')
+  var toDoEl = $('.description')
+
   $('#currentDay').text(today.format('dddd, MMM DD'))
 
-  saveButtonEl.on('click', function() {
+  saveButtonEl.on('click', function () {
     console.log('hello');
   });
 
-  toDoEl.on('click', function() {
+  toDoEl.on('click', function () {
     console.log('to do');
   })
 
-  // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
+  function showUpdateMessage() {
+    var messageEl = $('#message');
+    messageEl.text('Event Saved to Local Storage!');
+    messageEl.fadeIn('fast', function() {
+      setTimeout(function() {
+        messageEl.fadeOut('fast');
+      }, 3000);
+    });
+  }
+
+  saveButtonEl.on('click', function () {
+    var timeBlock = $(this).closest('.time-block');
+    var timeBlockId = timeBlock.attr('id');
+    var userNote = timeBlock.find('.description').val();
+
+    localStorage.setItem(timeBlockId, userNote);
+    showUpdateMessage();
+  });
+
+  function updateTimeBlockClasses() {
+    var currentHour = today.hour();
+
+    toDoEl.each(function () {
+      var timeBlock = $(this).closest('.time-block');
+      var timeBlockHour = parseInt(timeBlock.attr('id').split('-')[1]);
+
+      if (timeBlockHour < currentHour) {
+        timeBlock.removeClass('present future').addClass('past');
+      } else if (timeBlockHour === currentHour) {
+        timeBlock.removeClass('past future').addClass('present');
+      } else {
+        timeBlock.removeClass('past present').addClass('future');
+      }
+    });
+
+  }
+
+  function loadSavedNotes() {
+    toDoEl.each(function () {
+      var timeBlock = $(this).closest('.time-block');
+      var timeBlockId = timeBlock.attr('id'); 
+      var userNote = localStorage.getItem(timeBlockId);
+      if (userNote) {
+        $(this).val(userNote);
+      }
+    });
+};
+
+// TODO: Add a listener for click events on the save button. This code should
+// use the id in the containing time-block as a key to save the user input in
+// local storage. HINT: What does `this` reference in the click listener
+// function? How can DOM traversal be used to get the "hour-x" id of the
+// time-block containing the button that was clicked? How might the id be
+// useful when saving the description in local storage?
+
+updateTimeBlockClasses();
+loadSavedNotes();
   //
   // TODO: Add code to apply the past, present, or future class to each time
   // block by comparing the id to the current hour. HINTS: How can the id
